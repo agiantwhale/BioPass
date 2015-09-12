@@ -18,7 +18,6 @@ var videoAuthMethod={
   }
 };
 
-
 function AuthInfoStore(url,callback){
   if(s.include(url,'www.facebook.com')){
     callback("username","password");
@@ -34,14 +33,39 @@ AuthManager.prototype.attemptAuth=function(callback){
 
   _.each(authMgr.authStrategies,function(strategy){
 
-    navigator.webkitGetUserMedia(
-      strategy.userMedia,
-      function(stream){
+    async.waterfall([
+      // Get media stream
+      function(cb){
+        navigator.webkitGetUserMedia(
+          strategy.userMedia,
+          function(stream){
+            cb(null,stream);
+          },
+          function(error){
+            cb(error);
+          }
+        );
       },
-      function(error){
-        alert('Unable to access device!');
+      // Record stream
+      function(stream, cb){
+        var mediaRecorder = new MediaStreamRecorder(stream);
+        mediaRecorder.mimeType='audio/wav';
+        mediaRecorder.ondataavailable = function (blob) {
+          // POST/PUT "Blob" using FormData/XHR2
+          // var blobURL = URL.createObjectURL(blob);
+          // document.write('<a href="' + blobURL + '">' + blobURL + '</a>');
+          cb(null,blob);
+        };
+      },
+      // Pass on to auth strategy
+      function(blob,cb){
+        strategy.auth(blob,function(result,token){
+          cb(null,result);
+        });
       }
-    );
+    ],function(err,result){
+      callback(result);
+    });
 
   });
 };
