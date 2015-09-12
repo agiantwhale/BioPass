@@ -1,0 +1,17 @@
+{
+  "name": "biopass-mockserver",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "author": "stephen huh",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/agiantwhale/BioPass/issues"
+  },
+  "homepage": "https://github.com/agiantwhale/BioPass#readme",
+  "dependencies": {
+    "connect": "^3.4.0",
+    "express": "^4.13.3",
+    "serve-static": "^1.10.0"
+  }
+}
