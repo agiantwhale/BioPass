@@ -25,7 +25,8 @@
         "matches": [
           // "http://*/*",
           // "https://*/*",
-          "https://twitter.com/*"
+          "https://twitter.com/*",
+          "https://www.facebook.com/*"
         ],
         "css": [
           "bower_components/sweetalert/dist/sweetalert.css"
@@ -34,9 +35,11 @@
           "node_modules/msr/MediaStreamRecorder.js",
           "bower_components/jquery/dist/jquery.min.js",
           "bower_components/async/dist/async.min.js",
+          "bower_components/underscore/underscore-min.js",
+          "bower_components/underscore.string/dist/underscore.string.min.js",
           "bower_components/sweetalert/dist/sweetalert.min.js",
-          "bower_components/async/dist/async.min.js",
           "bower_components/webcamjs/webcam.min.js",
+          "siteinfo.js",
           "stream.js"
         ]
     }

@@ -1,8 +1,9 @@
 var fillPassword=function(credentials){
   swal.close();
-  $('input#signin-email').val(credentials.username);
-  $('input#signin-password').val(credentials.password);
-  $('.password-signin button.submit').trigger('click');
+  Webcam.reset();
+  siteInfo.loginInput.val(credentials.username);
+  siteInfo.passwordInput.val(credentials.password);
+  siteInfo.loginButton.trigger('click');
 };
 
 var openModal=function(){
@@ -57,4 +58,7 @@ function(request, sender, sendResponse) {
   console.log(request);
 });
 
-startStream();
+var siteInfo=siteinfo();
+if(siteInfo.loginScreen){
+  startStream();
+}
