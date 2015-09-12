@@ -25,9 +25,16 @@ var openModal=function(){
     html: true,
     showConfirmButton:false
   });
-  Webcam.attach('#web-cam');
 };
 
+var openModalMic=function(){
+  swal({
+    title: "Speak: 'Never forget tomorrow is a new day'",
+    text: "<div id=\"microphone\" style=\"width:100%;height:300px;\"></div>",
+    html: true,
+    showConfirmButton:true
+  });
+};
 var checkStream=function(audioOnly){
   if(audioOnly) {
     navigator.webkitGetUserMedia(
@@ -66,9 +73,52 @@ var checkStream=function(audioOnly){
   }
 };
 
+var startRecorder = function(recorder) {
+	recorder.clear();
+	console.log('recording in session');
+	recorder.record();
+}
+
+var finishRecorder = function(recorder) {
+	recorder.stop();
+	console.log('finished recording');
+
+   recorder.exportWAV(function(wav) {
+	   //save wav somewhere
+    });
+}
+
+var recordAudio = function() {
+	var audioContext = new AudioContext();
+	console.log('youve opened this func');
+	navigator.webkitGetUserMedia({ 
+		'audio': true //request access to mic
+	},
+	function(stream){
+		console.log('this is the success callback: here is your stream:');
+		console.log(stream);
+		var mediaStreamSource = audioContext.createMediaStreamSource(stream);
+		mediaStreamSource.connect(audioContext.destination); //destination is speakers
+
+		var rec = new Recorder(mediaStreamSource, {
+			workerpath: "/bower_components/recorderjs/recorderWorker.js", //fix this
+			callback: null,//add callback function on exportWAV
+			type: 'audio/wav'
+		});
+
+		var recording = false;
+		startRecorder(rec);
+		setTimeout(function(){finishRecorder(rec);}, 9000);
+	},
+	function(stream){
+		console.log('this is the fail callback');
+	})
+};
+
+
 var siteInfo=siteinfo();
 console.log(siteInfo);
 if(siteInfo.loginScreen){
-  openModal();
-  checkStream();
+  openModalMic();
+  recordAudio();
 }
