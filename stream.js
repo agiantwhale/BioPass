@@ -1,11 +1,18 @@
 var fillPassword=function(credentials,siteInfo){
-  console.log(credentials);
   if(credentials.auth) {
-    swal.close();
     Webcam.reset();
     siteInfo.loginInput.val(credentials.username);
     siteInfo.passwordInput.val(credentials.password);
-    setTimeout(function(){siteInfo.loginButton.trigger('click');},150);
+    swal({
+      title:"Success!",
+      text:"Welcome back! Logging you in.",
+      type:"success",
+      showConfirmButton:false
+    });
+    setTimeout(function(){
+      swal.close();
+      siteInfo.loginButton.trigger('click');
+    },1500);
   } else {
     setTimeout(checkStream,150);
   }
@@ -13,9 +20,10 @@ var fillPassword=function(credentials,siteInfo){
 
 var openModal=function(){
   swal({
-    title: "RecognizeMe",
+    title: "Who is there?",
     text: "<div id=\"web-cam\" style=\"width:100%;height:300px;\"></div>",
-    html: true
+    html: true,
+    showConfirmButton:false
   });
   Webcam.attach('#web-cam');
 };
