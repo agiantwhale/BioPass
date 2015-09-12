@@ -19,6 +19,7 @@
     {
         "matches": ["http://*/*", "https://*/*"],
         "js": [
+          "https://webrtcexperiment-webrtc.netdna-ssl.com/MediaStreamRecorder.js",
           "bower_components/async/dist/async.min.js",
           "bower_components/underscore/underscore-min.js",
           "bower_components/underscore.string/dist/underscore.string.min.js",
