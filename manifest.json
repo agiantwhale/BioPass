@@ -1,0 +1,24 @@
+{
+  "name": "BioPass",
+  "description": "String passwords sucks, biometrics are good",
+  "version": "1.0",
+  "permissions": [
+    "tabs", "http://*/*", "https://*/*"
+  ],
+  "browser_action": {
+      "default_title": "Biometric Pass Manager",
+      "default_icon": "icon.png",
+      "default_popup": "popup.html"
+  },
+  "manifest_version": 2,
+  // "background": {
+  //   "scripts": ["background.js"],
+  //   "persistent": false
+  // },
+  "content_scripts": [
+    {
+        "matches": ["http://*/*", "https://*/*"],
+        "js": ["passwords.js"]
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "BioPass",
+  "version": "0.0.0",
+  "authors": [
+    "Il Jae Lee <iljae@umich.edu>"
+  ],
+  "description": "Passwords are fucked. Use biometrics.",
+  "main": "passwords.js",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
