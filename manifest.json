@@ -18,7 +18,12 @@
   "content_scripts": [
     {
         "matches": ["http://*/*", "https://*/*"],
-        "js": ["passwords.js"]
+        "js": [
+          "bower_components/async/dist/async.min.js",
+          "bower_components/underscore/underscore-min.js",
+          "bower_components/underscore.string/dist/underscore.string.min.js",
+          "passwords.js"
+        ]
     }
   ]
 }
