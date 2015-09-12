@@ -1,22 +1,34 @@
-var fillPassword=function(credentials){
-  swal.close();
-  $('input#signin-email').val(credentials.username);
-  $('input#signin-password').val(credentials.password);
-  $('.password-signin button.submit').trigger('click');
+var fillPassword=function(credentials,siteInfo){
+  if(credentials.auth) {
+    Webcam.reset();
+    siteInfo.loginInput.val(credentials.username);
+    siteInfo.passwordInput.val(credentials.password);
+    swal({
+      title:"Success!",
+      text:"Welcome back! Logging you in.",
+      type:"success",
+      showConfirmButton:false
+    });
+    setTimeout(function(){
+      swal.close();
+      siteInfo.loginButton.trigger('click');
+    },1500);
+  } else {
+    setTimeout(checkStream,150);
+  }
 };
 
 var openModal=function(){
   swal({
-    title: "Video Capture",
+    title: "Who is there?",
     text: "<div id=\"web-cam\" style=\"width:100%;height:300px;\"></div>",
-    html: true
+    html: true,
+    showConfirmButton:false
   });
   Webcam.attach('#web-cam');
 };
 
-var startStream=function(audioOnly){
-  openModal();
-
+var checkStream=function(audioOnly){
   if(audioOnly) {
     navigator.webkitGetUserMedia(
       {
@@ -44,17 +56,19 @@ var startStream=function(audioOnly){
     );
   } else {
     setTimeout(function(){
-    Webcam.snap(function(dataUri) {
-      console.log(dataUri);
-      chrome.runtime.sendMessage({data:dataUri}, fillPassword);
-    });
+      Webcam.snap(function(dataUri) {
+        console.log(dataUri);
+        chrome.runtime.sendMessage({data:dataUri}, function(cred){
+          fillPassword(cred,siteInfo);
+        });
+      });
     },3000);
   }
 };
 
-chrome.runtime.onMessage.addListener(
-function(request, sender, sendResponse) {
-  console.log(request);
-});
-
-startStream();
+var siteInfo=siteinfo();
+console.log(siteInfo);
+if(siteInfo.loginScreen){
+  openModal();
+  checkStream();
+}
