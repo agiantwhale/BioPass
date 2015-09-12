@@ -72,7 +72,7 @@ var imageAuth={
         });
 
         async.parallel(veriTasks, function(err, results) {
-          if(!_.isUndefined(_.find(results,true))) {
+          if(!_.isEqual(_.indexOf(results,true),-1)) {
             cb(null,true);
           } else {
             cb(null,false);

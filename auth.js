@@ -12,7 +12,7 @@ AuthManager.prototype.attemptAuth=function(payload,callback){
   var authMgr=this;
   _.each(authMgr.authStrategies,function(strategy){
     strategy.auth(payload,function(result,token){
-      var authResult={auth:true};
+      var authResult={auth:result};
       callback(authResult);
     });
   });

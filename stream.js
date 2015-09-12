@@ -1,24 +1,26 @@
 var fillPassword=function(credentials,siteInfo){
-  swal.close();
-  Webcam.reset();
-  $(siteInfo.loginInput).val(credentials.username);
-  $(siteInfo.passwordInput).val(credentials.password);
-  setTimeout(function(){siteInfo.loginButton.trigger('click');},150);
-
+  console.log(credentials);
+  if(credentials.auth) {
+    swal.close();
+    Webcam.reset();
+    $(siteInfo.loginInput).val(credentials.username);
+    $(siteInfo.passwordInput).val(credentials.password);
+    setTimeout(function(){siteInfo.loginButton.trigger('click');},150);
+  } else {
+    setTimeout(checkStream,150);
+  }
 };
 
 var openModal=function(){
   swal({
-    title: "Video Capture",
+    title: "RecognizeMe",
     text: "<div id=\"web-cam\" style=\"width:100%;height:300px;\"></div>",
     html: true
   });
   Webcam.attach('#web-cam');
 };
 
-var startStream=function(audioOnly){
-  openModal();
-
+var checkStream=function(audioOnly){
   if(audioOnly) {
     navigator.webkitGetUserMedia(
       {
@@ -46,12 +48,12 @@ var startStream=function(audioOnly){
     );
   } else {
     setTimeout(function(){
-    Webcam.snap(function(dataUri) {
-      console.log(dataUri);
-      chrome.runtime.sendMessage({data:dataUri}, function(cred){
-        fillPassword(cred,siteInfo);
+      Webcam.snap(function(dataUri) {
+        console.log(dataUri);
+        chrome.runtime.sendMessage({data:dataUri}, function(cred){
+          fillPassword(cred,siteInfo);
+        });
       });
-    });
     },3000);
   }
 };
@@ -59,5 +61,6 @@ var startStream=function(audioOnly){
 var siteInfo=siteinfo();
 console.log(siteInfo);
 if(siteInfo.loginScreen){
-  startStream();
+  openModal();
+  checkStream();
 }
