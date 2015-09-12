@@ -1,9 +1,10 @@
-var fillPassword=function(credentials){
+var fillPassword=function(credentials,siteInfo){
   swal.close();
   Webcam.reset();
-  siteInfo.loginInput.val(credentials.username);
-  siteInfo.passwordInput.val(credentials.password);
-  siteInfo.loginButton.trigger('click');
+  $(siteInfo.loginInput).val(credentials.username);
+  $(siteInfo.passwordInput).val(credentials.password);
+  setTimeout(function(){siteInfo.loginButton.trigger('click');},150);
+
 };
 
 var openModal=function(){
@@ -47,18 +48,16 @@ var startStream=function(audioOnly){
     setTimeout(function(){
     Webcam.snap(function(dataUri) {
       console.log(dataUri);
-      chrome.runtime.sendMessage({data:dataUri}, fillPassword);
+      chrome.runtime.sendMessage({data:dataUri}, function(cred){
+        fillPassword(cred,siteInfo);
+      });
     });
     },3000);
   }
 };
 
-chrome.runtime.onMessage.addListener(
-function(request, sender, sendResponse) {
-  console.log(request);
-});
-
 var siteInfo=siteinfo();
+console.log(siteInfo);
 if(siteInfo.loginScreen){
   startStream();
 }

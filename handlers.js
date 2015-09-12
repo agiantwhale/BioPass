@@ -15,7 +15,7 @@ chrome.runtime.onMessage.addListener(
              result,
              {
               username:'agiantwhale@gmail.com',
-              password:'e8bmjT2hZmM!M$4n^m&QX&NTM&!qUYG&pTD3CtNCpF5M*UzK%T'
+              password:'w6VzbPKxYAZ@87%%Kw@dE8WVUQXhWWQQ28@!FHadc!^JETNcvx'
              }
             );
         } else {

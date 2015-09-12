@@ -3,19 +3,10 @@ function siteinfo() {
 
   if(s.include(currentUrl,'twitter')) {
     return {
-      loginScreen: $('input#signin-email').length===1,
-      loginInput: $('input#signin-email'),
-      passwordInput: $('input#signin-password'),
+      loginScreen: $('.username input#signin-email').length>=1,
+      loginInput: $('.username input#signin-email'),
+      passwordInput: $('.password input#signin-password'),
       loginButton: $('.flex-table-secondary button.submit')
-    };
-  }
-
-  if(s.include(currentUrl,'twitter')) {
-    return {
-      loginScreen: $('input#signin-email').length===1,
-      loginInput: $('input#signin-email'),
-      passwordInput: $('input#signin-password'),
-      loginButton: $('.Button StreamsLogin js-login')
     };
   }
 
