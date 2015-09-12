@@ -3,30 +3,40 @@
   "description": "String passwords sucks, biometrics are good",
   "version": "1.0",
   "permissions": [
-    "tabs",
-    "http://*/*", "https://*/*"
+    "tabs"
+    //"http://*/*",
+    //"https://www.facebook.com/*"
   ],
   "manifest_version": 2,
   "background": {
     "scripts": [
+      "bower_components/jquery/dist/jquery.min.js",
       "bower_components/async/dist/async.min.js",
       "bower_components/underscore/underscore-min.js",
       "bower_components/underscore.string/dist/underscore.string.min.js",
-      "handlers.js",
       "auth.js",
-      "strategy.js"
+      "strategy.js",
+      "handlers.js"
     ],
     "persistent": false
   },
   "content_scripts": [
     {
-        "matches": ["http://*/*", "https://*/*"],
+        "matches": [
+          // "http://*/*",
+          // "https://*/*",
+          "https://twitter.com/*"
+        ],
         "css": [
           "bower_components/sweetalert/dist/sweetalert.css"
         ],
         "js": [
           "node_modules/msr/MediaStreamRecorder.js",
+          "bower_components/jquery/dist/jquery.min.js",
+          "bower_components/async/dist/async.min.js",
           "bower_components/sweetalert/dist/sweetalert.min.js",
+          "bower_components/async/dist/async.min.js",
+          "bower_components/webcamjs/webcam.min.js",
           "stream.js"
         ]
     }

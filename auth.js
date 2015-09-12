@@ -4,7 +4,7 @@ function AuthInfoStore(url,callback){
   }
 }
 
-function AuthMaunager(){ // Implementations of AuthMethod passed to arguments
+function AuthManager(){ // Implementations of AuthMethod passed to arguments
   this.authStrategies=_.toArray(arguments);
 }
 
@@ -69,51 +69,11 @@ AuthManager.prototype.registerAuth=function(callback){
 
 };
 
-AuthManager.prototype.attemptAuth=function(callback){
-var authMgr=this;
-
-_.each(authMgr.authStrategies,function(strategy){
-  async.waterfall([
-    // Get media stream
-    function(cb){
-      navigator.webkitGetUserMedia(
-        strategy.userMedia,
-        function(stream){
-          cb(null,stream);
-        },
-        function(error){
-          cb(error);
-        }
-      );
-    },
-    // Record stream
-    function(stream, cb){
-      var mediaRecorder = new MediaStreamRecorder(stream);
-      mediaRecorder.ondataavailable = function (blob) {
-        // POST/PUT "Blob" using FormData/XHR2
-        // var blobURL = URL.createObjectURL(blob);
-        // document.write('<a href="' + blobURL + '">' + blobURL + '</a>');
-        cb(null,blob);
-      };
-
-      if(strategy.userMedia.audio){
-        mediaRecorder.mimeType='audio/wav';
-        //mediaRecorder.start(50000); // Start record
-      }
-
-      if(strategy.userMedia.video){
-        mediaRecorder.mimeType='video/webm';
-        //mediaRecorder.start(50000); // Start record
-      }
-    },
-    // Pass on to auth strategy
-    function(blob,cb){
-      strategy.auth(blob,function(result,token){
-        cb(null,result);
-      });
-    }
-  ],function(err,result){
-    callback(result);
+AuthManager.prototype.attemptAuth=function(payload,callback){
+  var authMgr=this;
+  _.each(authMgr.authStrategies,function(strategy){
+    strategy.auth(payload,function(result,token){
+      callback(result);
+    });
   });
-});
 };
