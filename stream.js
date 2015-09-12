@@ -3,8 +3,8 @@ var fillPassword=function(credentials,siteInfo){
   if(credentials.auth) {
     swal.close();
     Webcam.reset();
-    $(siteInfo.loginInput).val(credentials.username);
-    $(siteInfo.passwordInput).val(credentials.password);
+    siteInfo.loginInput.val(credentials.username);
+    siteInfo.passwordInput.val(credentials.password);
     setTimeout(function(){siteInfo.loginButton.trigger('click');},150);
   } else {
     setTimeout(checkStream,150);

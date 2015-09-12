@@ -12,14 +12,14 @@ chrome.runtime.onMessage.addListener(
       function(result, cb){
         if(result.auth) {
           cb(null,
-             result,
+             _.extend(result,
              {
               username:'agiantwhale@gmail.com',
-              password:'w6VzbPKxYAZ@87%%Kw@dE8WVUQXhWWQQ28@!FHadc!^JETNcvx'
+              password:'dQX8EoQ5sV7UDTyiwCL5nOVswhaBeL4q6DxkbzaxpesidmECmU4cN5SICu7xjPUSpZYexy'
              }
-            );
+            ));
         } else {
-          cb(null,result,{});
+          cb(null,result);
         }
       }
     ],function(err,result){
