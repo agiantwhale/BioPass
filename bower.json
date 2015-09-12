@@ -21,7 +21,7 @@
     "sweetalert": "~1.1.0",
     "underscore": "~1.8.3",
     "underscore.string": "~3.2.2",
-    "jquery": "~2.1.4"
+    "jquery": "~2.1.4",
     "webcamjs": "~1.0.4"
   }
 }
