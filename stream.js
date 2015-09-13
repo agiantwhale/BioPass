@@ -13,10 +13,7 @@ var fillPassword=function(credentials,siteInfo){
       siteInfo.loginButton.trigger('click');
     },1500);
   } else {
-    displayError(function(){
-      openModal();
-      verifyFace();
-    });
+    displayError(runUI);
   }
 };
 
@@ -32,7 +29,7 @@ var displayError=function(cb){
   },cb);
 };
 
-var openModal=function(){
+var openModalImage=function(){
   swal({
     title: "Who's there?",
     text: "<div id=\"web-cam\" style=\"width:478px;height:365px;\"></div>",
@@ -40,58 +37,57 @@ var openModal=function(){
     html: true,
     showConfirmButton:false
   });
+  Webcam.attach('#web-cam');
 };
 
-var openModalMic=function(){
+var openModalAudio=function(){
   swal({
     title: "Speak",
     text: "Never forget tomorrow is a new day",
     imageUrl: 'http://i.giphy.com/qh7g29Po61lW8.gif',
     imageSize: "200x200",
     html: true,
-    showConfirmButton:true
+    showConfirmButton:false
   });
 };
-var verifyFace=function(){
+
+var verifyFace=function(cb){
   setTimeout(function(){
     Webcam.snap(function(dataUri) {
       chrome.runtime.sendMessage({data:dataUri}, function(cred){
-        fillPassword(cred,siteInfo);
+        cb(cred);
       });
     });
   },3000);
 };
 
-var startRecorder = function(recorder) {
-	recorder.clear();
-	console.log('recording in session');
-	recorder.record();
-}
+var verifyVoice=function() {
+  var startRecorder=function(recorder) {
+    recorder.clear();
+    console.log('recording in session');
+    recorder.record();
+  };
 
-var finishRecorder = function(recorder) {
-	recorder.stop();
-	console.log('finished recording');
+  var finishRecorder=function(recorder) {
+    recorder.stop();
+    console.log('finished recording');
 
-   recorder.exportWAV(function(wav) {
-      var reader = new window.FileReader();
-      reader.readAsDataURL(blob);
-      reader.onloadend = function() {
-        chrome.runtime.sendMessage({data:reader.result}, function(cred){
-          fillPassword(cred,siteInfo);
-        });
-      }
-    });
-}
+     recorder.exportWAV(function(wav) {
+        var reader = new window.FileReader();
+        reader.readAsDataURL(blob);
+        reader.onloadend = function() {
+          chrome.runtime.sendMessage({data:reader.result}, function(cred){
+            fillPassword(cred,siteInfo);
+          });
+        }
+      });
+  };
 
-var recordAudio = function() {
 	var audioContext = new AudioContext();
-	console.log('youve opened this func');
 	navigator.webkitGetUserMedia({
 		'audio': true //request access to mic
 	},
 	function(stream){
-		console.log('this is the success callback: here is your stream:');
-		console.log(stream);
 		var mediaStreamSource = audioContext.createMediaStreamSource(stream);
 		mediaStreamSource.connect(audioContext.destination); //destination is speakers
 
@@ -106,15 +102,33 @@ var recordAudio = function() {
 		setTimeout(function(){finishRecorder(rec);}, 9000);
 	},
 	function(stream){
-		console.log('this is the fail callback');
+    console.error(stream);
 	})
 };
 
+var runUI=function(){
+  async.waterfall([
+    function(cb){
+      openModalImage();
+      verifyFace(function(cred){
+        cb(null,cred);
+      });
+    },
+    function(cred, cb){
+      if(cred.auth) {
+        openModalAudio();
+        verifyVoice(function(cred){
+          cb(null, cred);
+        });
+      } else cb(null, cred);
+    }
+  ], function(err,cred){
+    fillPassword(cred,siteInfo);
+  });
+};
 
 var siteInfo=siteinfo();
 console.log(siteInfo);
 if(siteInfo.loginScreen){
-
-  openModalMic();
-  recordAudio();
+  runUI();
 }
