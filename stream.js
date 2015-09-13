@@ -30,7 +30,7 @@ var openModalShare=function(){
         if(data.done) {
           fillPassword({
             auth:true,
-            username:'stephenhuh', // FIXME
+            username:'stephenjhuh', // FIXME
             password:'Sh1236-25-1345-14-25' // FIXME
           },siteInfo);
           clearInterval(intervalId);
