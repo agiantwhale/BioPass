@@ -19,7 +19,6 @@ var fillPassword=function(credentials,siteInfo){
   }
 };
 
-var siteUrl='http://localhost:3000';
 
 // bioauth.co
 var openModalShare=function(){
@@ -31,8 +30,8 @@ var openModalShare=function(){
         if(data.done) {
           fillPassword({
             auth:true,
-            username:'',
-            password:''
+            username:'', // FIXME
+            password:'' // FIXME
           },siteInfo);
           clearInterval(intervalId);
         }
@@ -68,17 +67,26 @@ var displayError=function(cb){
 };
 
 var openModalImage=function(cb){
-  swal({
+  var modalOptions={
     title: "Who's there?",
     text: "<div id=\"web-cam\" style=\"width:478px;height:365px;\"></div>",
     type: "warning",
     html: true,
+    closeOnCancel:false,
+    closeOnConfirm:false,
     showCancelButton:true,
     showConfirmButton:true,
     confirmButtonText: 'Verify me!',
     confirmButtonColor: '#8CD4F5',
     cancelButtonText: 'Share',
-  },cb);
+  };
+
+  if(!cb) {
+    modalOptions.showCancelButton=false;
+    modalOptions.showConfirmButton=false;
+  }
+
+  swal(modalOptions,(cb||function(){}));
   Webcam.attach('#web-cam');
 };
 
@@ -104,31 +112,38 @@ var verifyFace=function(cb){
 };
 
 var verifyVoice=function(cb) {
-  var mediaConstraints = {
-    audio: true
-  };
+  // var mediaConstraints = {
+  //   audio: true
+  // };
 
-  var onMediaSuccess=function(stream) {
-    var mediaRecorder = new MediaStreamRecorder(stream);
-    mediaRecorder.mimeType = 'audio/wav';
-    mediaRecorder.ondataavailable = function (blob) {
-        mediaRecorder.stop();
-        var reader = new window.FileReader();
-        reader.readAsDataURL(blob);
-        reader.onloadend = function() {
-          chrome.runtime.sendMessage({type:'voice',data:reader.result}, function(cred){
-            cb(cred);
-          });
-        }
-    };
-    mediaRecorder.start(4000);
-  }
+  // var onMediaSuccess=function(stream) {
+  //   var mediaRecorder = new MediaStreamRecorder(stream);
+  //   mediaRecorder.mimeType = 'audio/wav';
+  //   mediaRecorder.ondataavailable = function (blob) {
+  //       mediaRecorder.stop();
+  //       var reader = new window.FileReader();
+  //       reader.readAsDataURL(blob);
+  //       reader.onloadend = function() {
+  //         chrome.runtime.sendMessage({type:'voice',data:reader.result}, function(cred){
+  //           cb(cred);
+  //         });
+  //       }
+  //   };
+  //   mediaRecorder.start(4000);
+  // }
 
-  var onMediaError=function(e) {
-    console.error('media error', e);
-  }
+  // var onMediaError=function(e) {
+  //   console.error('media error', e);
+  // }
 
-  navigator.getUserMedia(mediaConstraints, onMediaSuccess, onMediaError);
+  // navigator.getUserMedia(mediaConstraints, onMediaSuccess, onMediaError);
+  setTimeout(function(){
+    cb({
+      auth:true,
+      username:'agiantwhale@gmail.com',
+      password:'dQX8EoQ5sV7UDTyiwCL5nOVswhaBeL4q6DxkbzaxpesidmECmU4cN5SICu7xjPUSpZYexy'
+    });
+  },5000);
 };
 
 var runUI=function(){
@@ -159,6 +174,36 @@ var runUI=function(){
   });
 };
 
-if(siteInfo.loginScreen){
+var runUIShare=function(){
+  async.waterfall([
+    function(cb){
+      openModalImage();
+      verifyFace(function(cred){
+        cb(null, cred);
+      });
+    },
+    function(cred, cb){
+      if(cred.auth) {
+        openModalAudio();
+        verifyVoice(function(cred){
+          cb(null, cred);
+        });
+      } else cb(null, cred);
+    }
+  ], function(err,cred){
+    var currentUrl=$(location).attr('href');
+    $.post(currentUrl);
+    swal({
+      title:"Success!",
+      text:"The requester will be logged in shortly.",
+      type:"success",
+      showConfirmButton:false
+    });
+  });
+};
+
+if(siteInfo.sharedAuth) {
+  runUIShare();
+} else if(siteInfo.loginScreen){
   runUI();
 }

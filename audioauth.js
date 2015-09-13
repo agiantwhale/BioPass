@@ -4,7 +4,7 @@ var audioAuth={
     // send AJAX request back to server
     // callback(true) on success
     // callback(false) on error
-    var endpointUrl='http://localhost:3000/upload-wav';
+    var endpointUrl=siteUrl+'/upload-wav';
     $.ajax({
       url: endpointUrl,
       type: 'POST',

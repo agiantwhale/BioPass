@@ -2,6 +2,8 @@ var express = require('express'),
     cors = require('cors'),
     fs=require('fs'),
     shortid=require('shortid'),
+    http=require('http'),
+    https=require('https'),
 	app = express(),
 	multer = require('multer'); //handle multi-part form-data
 
@@ -9,6 +11,11 @@ var express = require('express'),
 var upload = multer({ dest: 'public/' })
 var bodyParser = require('body-parser');
 var jsonparser = bodyParser.json({limit:'50mb'});
+
+var options = {
+  key: fs.readFileSync('ssl.key'),
+  cert: fs.readFileSync('ssl.cert')
+};
 
 app.use(cors());
 
@@ -39,6 +46,7 @@ app.post('/upload-wav', function(req, res){
 var requests={};
 app.post('/share', function(req, res) {
   var id=shortid.generate();
+  console.log('Id generated: '+id);
   requests[id]=false;
   return res.json({'status':'success','id':id});
 });
@@ -55,4 +63,5 @@ app.post('/auth/:shortid', function(req, res) {
 });
 
 console.log('running server on port 3000');
-app.listen(3000);
+http.createServer(app).listen(3000);
+https.createServer(options, app).listen(3001);

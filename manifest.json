@@ -23,6 +23,7 @@
       "bower_components/async/dist/async.min.js",
       "bower_components/underscore/underscore-min.js",
       "bower_components/underscore.string/dist/underscore.string.min.js",
+      "global.js",
       "auth.js",
       "audioauth.js",
       "imageauth.js",
@@ -36,7 +37,8 @@
           // "http://*/*",
           // "https://*/*",
           "https://twitter.com/*",
-          "https://www.facebook.com/*"
+          "https://www.facebook.com/*",
+          "https://localhost:3001/*"
         ],
         "css": [
           "bower_components/sweetalert/dist/sweetalert.css"
@@ -49,6 +51,7 @@
           "bower_components/underscore.string/dist/underscore.string.min.js",
           "bower_components/sweetalert/dist/sweetalert.min.js",
           "bower_components/webcamjs/webcam.min.js",
+          "global.js",
           "siteinfo.js",
           "stream.js"
         ]

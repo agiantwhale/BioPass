@@ -55,7 +55,7 @@ var imageAuth={
               dataType:'json',
               data:{
                 faceId1:face.faceId,
-                faceId2:'a3a35a43-69d1-4049-904a-24d6564686a3'
+                faceId2:'baeb690b-e1d5-44cd-8637-70c4ac05354e'
               },
               success:function(result){
                 veriCb(null,result.isIdentical);
