@@ -10,18 +10,29 @@ var fillPassword=function(credentials,siteInfo){
       showConfirmButton:false
     });
     setTimeout(function(){
-      swal.close();
       siteInfo.loginButton.trigger('click');
     },1500);
   } else {
-    setTimeout(checkStream,150);
+    Webcam.reset();
+    swal({
+      title:"Error!",
+      text:"Uh oh! You don't belong here.",
+      type:"error",
+      closeOnConfirm:false,
+      confirmButtonColor: "#DD6B55",
+      confirmButtonText: "Try again?"
+    },function(){
+      openModal();
+      checkStream();
+    });
   }
 };
 
 var openModal=function(){
   swal({
-    title: "Who is there?",
-    text: "<div id=\"web-cam\" style=\"width:100%;height:300px;\"></div>",
+    title: "Who's there?",
+    text: "<div id=\"web-cam\" style=\"width:478px;height:365px;\"></div>",
+    type: "warning",
     html: true,
     showConfirmButton:false
   });
@@ -57,7 +68,6 @@ var checkStream=function(audioOnly){
   } else {
     setTimeout(function(){
       Webcam.snap(function(dataUri) {
-        console.log(dataUri);
         chrome.runtime.sendMessage({data:dataUri}, function(cred){
           fillPassword(cred,siteInfo);
         });

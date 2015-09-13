@@ -15,7 +15,7 @@ function siteinfo() {
       loginScreen: $('input#email').length===1,
       loginInput: $('input#email'),
       passwordInput: $('input#pass'),
-      loginButton: $('input#u_0_x')
+      loginButton: $('#loginbutton input')
     };
   }
 }
