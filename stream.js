@@ -30,7 +30,8 @@ var openModal=function(){
 var openModalMic=function(){
   swal({
     title: "Speak: 'Never forget tomorrow is a new day'",
-    text: "<div id=\"microphone\" style=\"width:100%;height:300px;\"></div>",
+	imageUrl: 'http://i.giphy.com/qh7g29Po61lW8.gif',
+	imageSize: "200x200",
     html: true,
     showConfirmButton:true
   });
