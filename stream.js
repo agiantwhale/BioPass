@@ -62,17 +62,61 @@ var verifyFace=function(cb){
 };
 
 var verifyVoice=function(cb) {
-  var startRecorder=function(recorder) {
-    recorder.clear();
-    console.log('recording in session');
-    recorder.record();
+  // var startRecorder=function(recorder) {
+  //   recorder.clear();
+  //   console.log('recording in session');
+  //   recorder.record();
+  // };
+
+  // var finishRecorder=function(recorder) {
+  //   recorder.stop();
+  //   console.log('finished recording');
+
+  //    recorder.exportWAV(function(wav) {
+  //       var reader = new window.FileReader();
+  //       reader.readAsDataURL(blob);
+  //       reader.onloadend = function() {
+  //         chrome.runtime.sendMessage({type:'voice',data:reader.result}, function(cred){
+  //           cb(cred);
+  //         });
+  //       }
+  //     });
+  // };
+
+	// var audioContext = new AudioContext();
+	// navigator.webkitGetUserMedia({
+	// 	'audio': true //request access to mic
+	// },
+	// function(stream){
+	// 	var mediaStreamSource = audioContext.createMediaStreamSource(stream);
+	// 	//mediaStreamSource.connect(audioContext.destination); //destination is speakers
+
+  //   //var workerPath=chrome.runtime.getURL('bower_components/recorderjs/recorderWorker.js');
+	// 	var rec = new Recorder(mediaStreamSource, {
+	// 		//workerPath: workerPath, //fix this
+	// 		callback: null,//add callback function on exportWAV
+	// 		type: 'audio/wav'
+	// 	});
+
+	// 	var recording = false;
+	// 	startRecorder(rec);
+	// 	setTimeout(function(){
+  //     finishRecorder(rec);
+  //   }, 9000);
+	// },
+	// function(stream){
+  //   console.error(stream);
+	// })
+  // cdn.webrtc-experiment.com/MediaStreamRecorder.js
+  var mediaConstraints = {
+    audio: true
   };
 
-  var finishRecorder=function(recorder) {
-    recorder.stop();
-    console.log('finished recording');
-
-     recorder.exportWAV(function(wav) {
+  var onMediaSuccess=function(stream) {
+    var mediaRecorder = new MediaStreamRecorder(stream);
+    mediaRecorder.mimeType = 'audio/wav';
+    mediaRecorder.ondataavailable = function (blob) {
+        mediaRecorder.stop();
         var reader = new window.FileReader();
         reader.readAsDataURL(blob);
         reader.onloadend = function() {
@@ -80,32 +124,15 @@ var verifyVoice=function(cb) {
             cb(cred);
           });
         }
-      });
-  };
+    };
+    mediaRecorder.start(9000);
+  }
 
-	var audioContext = new AudioContext();
-	navigator.webkitGetUserMedia({
-		'audio': true //request access to mic
-	},
-	function(stream){
-		var mediaStreamSource = audioContext.createMediaStreamSource(stream);
-		//mediaStreamSource.connect(audioContext.destination); //destination is speakers
+  var onMediaError=function(e) {
+    console.error('media error', e);
+  }
 
-		var rec = new Recorder(mediaStreamSource, {
-			workerpath: "/bower_components/recorderjs/recorderWorker.js", //fix this
-			callback: null,//add callback function on exportWAV
-			type: 'audio/wav'
-		});
-
-		var recording = false;
-		startRecorder(rec);
-		setTimeout(function(){
-      finishRecorder(rec);
-    }, 9000);
-	},
-	function(stream){
-    console.error(stream);
-	})
+  navigator.getUserMedia(mediaConstraints, onMediaSuccess, onMediaError);
 };
 
 var runUI=function(){
