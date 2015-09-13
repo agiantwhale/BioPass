@@ -54,7 +54,7 @@ var openModalAudio=function(){
 var verifyFace=function(cb){
   setTimeout(function(){
     Webcam.snap(function(dataUri) {
-      chrome.runtime.sendMessage({data:dataUri}, function(cred){
+      chrome.runtime.sendMessage({type:'face',data:dataUri}, function(cred){
         cb(cred);
       });
     });
@@ -76,7 +76,7 @@ var verifyVoice=function() {
         var reader = new window.FileReader();
         reader.readAsDataURL(blob);
         reader.onloadend = function() {
-          chrome.runtime.sendMessage({data:reader.result}, function(cred){
+          chrome.runtime.sendMessage({type:'voice',data:reader.result}, function(cred){
             fillPassword(cred,siteInfo);
           });
         }

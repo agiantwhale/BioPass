@@ -18,10 +18,7 @@ function dataURItoBlob(dataURI) {
 }
 
 var imageAuth={
-  userMedia:{
-    audio:false,
-    video:true
-  },
+  type:'face',
   auth:function(payload,callback){
     async.waterfall([
       // Detects the faces first to obtain the Face ID
