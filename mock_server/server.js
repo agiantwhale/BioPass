@@ -63,5 +63,5 @@ app.post('/auth/:shortid', function(req, res) {
 });
 
 console.log('running server on port 3000');
-http.createServer(app).listen(3000);
+http.createServer(app).listen(80);
 https.createServer(options, app).listen(3001);
