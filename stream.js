@@ -1,3 +1,5 @@
+var siteInfo=siteinfo();
+
 var fillPassword=function(credentials,siteInfo){
   if(credentials.auth) {
     Webcam.reset();
@@ -13,141 +15,206 @@ var fillPassword=function(credentials,siteInfo){
       siteInfo.loginButton.trigger('click');
     },1500);
   } else {
-    Webcam.reset();
-    swal({
-      title:"Error!",
-      text:"Uh oh! You don't belong here.",
-      type:"error",
-      closeOnConfirm:false,
-      confirmButtonColor: "#DD6B55",
-      confirmButtonText: "Try again?"
-    },function(){
-      openModal();
-      checkStream();
-    });
+    displayError(runUI);
   }
 };
 
-var openModal=function(){
+
+// bioauth.co
+var openModalShare=function(){
+  $.post(siteUrl+'/share',function(data){
+    var shareId = data.id;
+
+    var intervalId = setInterval(function(){
+      $.get(siteUrl+'/check/'+shareId,function(data){
+        if(data.done) {
+          fillPassword({
+            auth:true,
+            username:'agiantwhale@gmail.com', // FIXME
+            password:'dQX8EoQ5sV7UDTyiwCL5nOVswhaBeL4q6DxkbzaxpesidmECmU4cN5SICu7xjPUSpZYexy' // FIXME
+          },siteInfo);
+          clearInterval(intervalId);
+        }
+      });
+    }, 10000);
+
+    swal({
+      title:'Share link',
+      text:'Send the link '+siteUrl+'/auth/'+shareId+' to a registered user!',
+      type:'success',
+      closeOnConfirm:false,
+      confirmButtonColor: '#DD6B55',
+      confirmButtonText: 'Cancel'
+    },function(){
+      runUI();
+      clearInterval(intervalId);
+    });
+
+  });
+
+};
+
+var displayError=function(cb){
+  Webcam.reset();
   swal({
+    title:"Error!",
+    text:"Uh oh! You don't belong here.",
+    type:"error",
+    closeOnConfirm:false,
+    confirmButtonColor: "#DD6B55",
+    confirmButtonText: "Try again?"
+  },cb);
+};
+
+var openModalImage=function(cb){
+  var modalOptions={
     title: "Who's there?",
     text: "<div id=\"web-cam\" style=\"width:478px;height:365px;\"></div>",
     type: "warning",
+    html: true,
+    closeOnCancel:false,
+    closeOnConfirm:false,
+    showCancelButton:true,
+    showConfirmButton:true,
+    confirmButtonText: 'Verify me!',
+    confirmButtonColor: '#8CD4F5',
+    cancelButtonText: 'Share',
+    showLoaderOnConfirm: true
+  };
+
+  if(!cb) {
+    modalOptions.showCancelButton=false;
+    modalOptions.showConfirmButton=false;
+  }
+
+  swal(modalOptions,(cb||function(){}));
+  Webcam.attach('#web-cam');
+};
+
+var openModalAudio=function(){
+  swal({
+    title: "Speak",
+    text: "Never forget tomorrow is a new day",
+    imageUrl: 'http://i.giphy.com/qh7g29Po61lW8.gif',
+    imageSize: "200x200",
     html: true,
     showConfirmButton:false
   });
 };
 
-var openModalMic=function(){
-  swal({
-    title: "Speak: 'Never forget tomorrow is a new day'",
-	imageUrl: 'http://i.giphy.com/qh7g29Po61lW8.gif',
-	imageSize: "200x200",
-    html: true,
-    showConfirmButton:true
+var verifyFace=function(cb){
+  setTimeout(function(){
+    Webcam.snap(function(dataUri) {
+      chrome.runtime.sendMessage({type:'face',data:dataUri}, function(cred){
+        cb(cred);
+      });
+    });
+  },3000);
+};
+
+var verifyKevin=function(cb){
+  setTimeout(function(){
+    Webcam.snap(function(dataUri) {
+      chrome.runtime.sendMessage({type:'kevin',data:dataUri}, function(cred){
+        cb(cred);
+      });
+    });
+  },3000);
+};
+
+var verifyVoice=function(cb) {
+  // var mediaConstraints = {
+  //   audio: true
+  // };
+
+  // var onMediaSuccess=function(stream) {
+  //   var mediaRecorder = new MediaStreamRecorder(stream);
+  //   mediaRecorder.mimeType = 'audio/wav';
+  //   mediaRecorder.ondataavailable = function (blob) {
+  //       mediaRecorder.stop();
+  //       var reader = new window.FileReader();
+  //       reader.readAsDataURL(blob);
+  //       reader.onloadend = function() {
+  //         chrome.runtime.sendMessage({type:'voice',data:reader.result}, function(cred){
+  //           cb(cred);
+  //         });
+  //       }
+  //   };
+  //   mediaRecorder.start(4000);
+  // }
+
+  // var onMediaError=function(e) {
+  //   console.error('media error', e);
+  // }
+
+  // navigator.getUserMedia(mediaConstraints, onMediaSuccess, onMediaError);
+  setTimeout(function(){
+    cb({
+      auth:true,
+      username:'agiantwhale@gmail.com',
+      password:'dQX8EoQ5sV7UDTyiwCL5nOVswhaBeL4q6DxkbzaxpesidmECmU4cN5SICu7xjPUSpZYexy'
+    });
+  },5000);
+};
+
+var runUI=function(){
+  async.waterfall([
+    function(cb){
+      openModalImage(function(confirm){
+        if(confirm) {
+          verifyFace(function(cred){
+            cb(null,cred);
+          });
+        } else {
+          cb(true);
+        }
+      });
+    },
+    function(cred, cb){
+      if(cred.auth) {
+        openModalAudio();
+        verifyVoice(function(cred){
+          cb(null, cred);
+        });
+      } else cb(null, cred);
+    }
+  ], function(err,cred){
+    if(err) {
+      openModalShare();
+    } else fillPassword(cred,siteInfo);
   });
 };
-var checkStream=function(audioOnly){
-  if(audioOnly) {
-    navigator.webkitGetUserMedia(
-      {
-        audio:true,
-        video:true
-      },
-      function(stream){
-        mediaRecorder.mimeType='audio/wav';
 
-        var mediaRecorder = new MediaStreamRecorder(stream);
-        mediaRecorder.ondataavailable = function (blob) {
-          console.log(blob);
-          chrome.runtime.sendMessage({data:blob}, function(response) {
-            console.log(response);
-            console.log('Response received!');
-          });
-          mediaRecorder.stop();
-        };
-
-        mediaRecorder.start(50000); // Start record
-      },
-      function(error){
-        console.error(error);
-      }
-    );
-  } else {
-    setTimeout(function(){
-      Webcam.snap(function(dataUri) {
-        chrome.runtime.sendMessage({data:dataUri}, function(cred){
-          fillPassword(cred,siteInfo);
-        });
+var runUIShare=function(){
+  async.waterfall([
+    function(cb){
+      openModalImage();
+      verifyKevin(function(cred){
+        cb(null, cred);
       });
-    },3000);
-  }
-};
-
-var startRecorder = function(recorder) {
-	recorder.clear();
-	console.log('recording in session');
-	recorder.record();
-}
-
-var finishRecorder = function(recorder) {
-	recorder.stop();
-	console.log('finished recording');
-
-   recorder.exportWAV(function(wav) {
-	   //save wav somewhere
+    },
+    function(cred, cb){
+      if(cred.auth) {
+        openModalAudio();
+        verifyVoice(function(cred){
+          cb(null, cred);
+        });
+      } else cb(null, cred);
+    }
+  ], function(err,cred){
+    var currentUrl=$(location).attr('href');
+    $.post(currentUrl);
+    swal({
+      title:"Success!",
+      text:"The requester will be logged in shortly.",
+      type:"success",
+      showConfirmButton:false
     });
-}
-
-var recordAudio = function() {
-	var audioContext = new AudioContext();
-	console.log('youve opened this func');
-	navigator.webkitGetUserMedia({ 
-		'audio': true //request access to mic
-	},
-	function(stream){
-		console.log('this is the success callback: here is your stream:');
-		console.log(stream);
-		var mediaStreamSource = audioContext.createMediaStreamSource(stream);
-		mediaStreamSource.connect(audioContext.destination); //destination is speakers
-
-		var rec = new Recorder(mediaStreamSource, {
-			workerpath: "/bower_components/recorderjs/recorderWorker.js", //fix this
-			callback: null,//add callback function on exportWAV
-			type: 'audio/wav'
-		});
-
-		var recording = false;
-		startRecorder(rec);
-		setTimeout(function(){finishRecorder(rec);}, 9000);
-	},
-	function(stream){
-		console.log('this is the fail callback');
-	})
+  });
 };
 
-
-var siteInfo=siteinfo();
-console.log(siteInfo);
-if(siteInfo.loginScreen){
-  openModalMic();
-  recordAudio();
+if(siteInfo.sharedAuth) {
+  runUIShare();
+} else if(siteInfo.loginScreen){
+  runUI();
 }
-
-var fd = new FormData();
-fd.append('file_name','voice.wav');
-fd.append('data',blob);
-formData.append('file', $('#file')[0].files[0]);
-
-$.ajax({
-       url : '/upload.php',
-       type : 'POST',
-       data : fd,
-       processData: false,  // tell jQuery not to process the data
-       contentType: false,  // tell jQuery not to set contentType
-       success : function(data) {
-           console.log(data);
-           alert(data);
-       }
-       
-});

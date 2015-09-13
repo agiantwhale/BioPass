@@ -16,12 +16,12 @@
     "tests"
   ],
   "dependencies": {
+    "Recorderjs": "https://github.com/agiantwhale/Recorderjs.git",
     "async": "~1.4.2",
     "jquery": "~2.1.4",
     "sweetalert": "~1.1.0",
     "underscore": "~1.8.3",
     "underscore.string": "~3.2.2",
-    "webcamjs": "~1.0.4",
-    "recorderjs": "~0.0.0"
+    "webcamjs": "~1.0.4"
   }
 }

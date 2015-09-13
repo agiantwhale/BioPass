@@ -1,11 +1,11 @@
-var authMgr=new AuthManager(imageAuth);
+var authMgr=new AuthManager(imageAuth,kevinAuth,audioAuth);
 
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     // request.data -- blob
     async.waterfall([
       function(cb){
-        authMgr.attemptAuth(request.data,function(result){
+        authMgr.attemptAuth(request,function(result){
           cb(null,result);
         });
       },

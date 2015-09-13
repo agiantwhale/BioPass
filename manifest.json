@@ -23,8 +23,10 @@
       "bower_components/async/dist/async.min.js",
       "bower_components/underscore/underscore-min.js",
       "bower_components/underscore.string/dist/underscore.string.min.js",
+      "global.js",
       "auth.js",
-      "strategy.js",
+      "audioauth.js",
+      "imageauth.js",
       "handlers.js"
     ],
     "persistent": false
@@ -35,7 +37,9 @@
           // "http://*/*",
           // "https://*/*",
           "https://twitter.com/*",
-          "https://www.facebook.com/*"
+          "https://www.facebook.com/*",
+          "https://localhost:3001/*",
+          "https://bioauth.co/*"
         ],
         "css": [
           "bower_components/sweetalert/dist/sweetalert.css"
@@ -48,7 +52,7 @@
           "bower_components/underscore.string/dist/underscore.string.min.js",
           "bower_components/sweetalert/dist/sweetalert.min.js",
           "bower_components/webcamjs/webcam.min.js",
-		  "bower_components/recorderjs/recorder.js", //minify later if necessary
+          "global.js",
           "siteinfo.js",
           "stream.js"
         ]
