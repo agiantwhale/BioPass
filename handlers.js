@@ -1,4 +1,4 @@
-var authMgr=new AuthManager(imageAuth,audioAuth);
+var authMgr=new AuthManager(imageAuth,kevinAuth,audioAuth);
 
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {

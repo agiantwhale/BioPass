@@ -30,8 +30,8 @@ var openModalShare=function(){
         if(data.done) {
           fillPassword({
             auth:true,
-            username:'', // FIXME
-            password:'' // FIXME
+            username:'agiantwhale@gmail.com', // FIXME
+            password:'dQX8EoQ5sV7UDTyiwCL5nOVswhaBeL4q6DxkbzaxpesidmECmU4cN5SICu7xjPUSpZYexy' // FIXME
           },siteInfo);
           clearInterval(intervalId);
         }
@@ -79,6 +79,7 @@ var openModalImage=function(cb){
     confirmButtonText: 'Verify me!',
     confirmButtonColor: '#8CD4F5',
     cancelButtonText: 'Share',
+    showLoaderOnConfirm: true
   };
 
   if(!cb) {
@@ -105,6 +106,16 @@ var verifyFace=function(cb){
   setTimeout(function(){
     Webcam.snap(function(dataUri) {
       chrome.runtime.sendMessage({type:'face',data:dataUri}, function(cred){
+        cb(cred);
+      });
+    });
+  },3000);
+};
+
+var verifyKevin=function(cb){
+  setTimeout(function(){
+    Webcam.snap(function(dataUri) {
+      chrome.runtime.sendMessage({type:'kevin',data:dataUri}, function(cred){
         cb(cred);
       });
     });
@@ -178,7 +189,7 @@ var runUIShare=function(){
   async.waterfall([
     function(cb){
       openModalImage();
-      verifyFace(function(cred){
+      verifyKevin(function(cred){
         cb(null, cred);
       });
     },
