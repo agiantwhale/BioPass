@@ -61,7 +61,7 @@ var verifyFace=function(cb){
   },3000);
 };
 
-var verifyVoice=function() {
+var verifyVoice=function(cb) {
   var startRecorder=function(recorder) {
     recorder.clear();
     console.log('recording in session');
@@ -77,7 +77,7 @@ var verifyVoice=function() {
         reader.readAsDataURL(blob);
         reader.onloadend = function() {
           chrome.runtime.sendMessage({type:'voice',data:reader.result}, function(cred){
-            fillPassword(cred,siteInfo);
+            cb(cred);
           });
         }
       });
@@ -89,7 +89,7 @@ var verifyVoice=function() {
 	},
 	function(stream){
 		var mediaStreamSource = audioContext.createMediaStreamSource(stream);
-		mediaStreamSource.connect(audioContext.destination); //destination is speakers
+		//mediaStreamSource.connect(audioContext.destination); //destination is speakers
 
 		var rec = new Recorder(mediaStreamSource, {
 			workerpath: "/bower_components/recorderjs/recorderWorker.js", //fix this
@@ -99,7 +99,9 @@ var verifyVoice=function() {
 
 		var recording = false;
 		startRecorder(rec);
-		setTimeout(function(){finishRecorder(rec);}, 9000);
+		setTimeout(function(){
+      finishRecorder(rec);
+    }, 9000);
 	},
 	function(stream){
     console.error(stream);
