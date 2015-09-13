@@ -30,13 +30,13 @@ var openModalShare=function(){
         if(data.done) {
           fillPassword({
             auth:true,
-            username:'agiantwhale@gmail.com', // FIXME
-            password:'dQX8EoQ5sV7UDTyiwCL5nOVswhaBeL4q6DxkbzaxpesidmECmU4cN5SICu7xjPUSpZYexy' // FIXME
+            username:'stephenhuh', // FIXME
+            password:'Sh1236-25-1345-14-25' // FIXME
           },siteInfo);
           clearInterval(intervalId);
         }
       });
-    }, 10000);
+    }, 2000);
 
     swal({
       title:'Share link',
