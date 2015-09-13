@@ -124,7 +124,7 @@ var kevinAuth={
               dataType:'json',
               data:{
                 faceId1:face.faceId,
-                faceId2:'baeb690b-e1d5-44cd-8637-70c4ac05354e'
+                faceId2:'d154470b-34ba-4b3f-9830-4c5cab79240a'
               },
               success:function(result){
                 veriCb(null,result.isIdentical);
