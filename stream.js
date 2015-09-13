@@ -13,19 +13,23 @@ var fillPassword=function(credentials,siteInfo){
       siteInfo.loginButton.trigger('click');
     },1500);
   } else {
-    Webcam.reset();
-    swal({
-      title:"Error!",
-      text:"Uh oh! You don't belong here.",
-      type:"error",
-      closeOnConfirm:false,
-      confirmButtonColor: "#DD6B55",
-      confirmButtonText: "Try again?"
-    },function(){
+    displayError(function(){
       openModal();
-      checkStream();
+      verifyFace();
     });
   }
+};
+
+var displayError=function(cb){
+  Webcam.reset();
+  swal({
+    title:"Error!",
+    text:"Uh oh! You don't belong here.",
+    type:"error",
+    closeOnConfirm:false,
+    confirmButtonColor: "#DD6B55",
+    confirmButtonText: "Try again?"
+  },cb);
 };
 
 var openModal=function(){
@@ -40,48 +44,22 @@ var openModal=function(){
 
 var openModalMic=function(){
   swal({
-    title: "Speak: 'Never forget tomorrow is a new day'",
-	imageUrl: 'http://i.giphy.com/qh7g29Po61lW8.gif',
-	imageSize: "200x200",
+    title: "Speak",
+    text: "Never forget tomorrow is a new day",
+    imageUrl: 'http://i.giphy.com/qh7g29Po61lW8.gif',
+    imageSize: "200x200",
     html: true,
     showConfirmButton:true
   });
 };
-var checkStream=function(audioOnly){
-  if(audioOnly) {
-    navigator.webkitGetUserMedia(
-      {
-        audio:true,
-        video:true
-      },
-      function(stream){
-        mediaRecorder.mimeType='audio/wav';
-
-        var mediaRecorder = new MediaStreamRecorder(stream);
-        mediaRecorder.ondataavailable = function (blob) {
-          console.log(blob);
-          chrome.runtime.sendMessage({data:blob}, function(response) {
-            console.log(response);
-            console.log('Response received!');
-          });
-          mediaRecorder.stop();
-        };
-
-        mediaRecorder.start(50000); // Start record
-      },
-      function(error){
-        console.error(error);
-      }
-    );
-  } else {
-    setTimeout(function(){
-      Webcam.snap(function(dataUri) {
-        chrome.runtime.sendMessage({data:dataUri}, function(cred){
-          fillPassword(cred,siteInfo);
-        });
+var verifyFace=function(){
+  setTimeout(function(){
+    Webcam.snap(function(dataUri) {
+      chrome.runtime.sendMessage({data:dataUri}, function(cred){
+        fillPassword(cred,siteInfo);
       });
-    },3000);
-  }
+    });
+  },3000);
 };
 
 var startRecorder = function(recorder) {
@@ -95,14 +73,20 @@ var finishRecorder = function(recorder) {
 	console.log('finished recording');
 
    recorder.exportWAV(function(wav) {
-	   //save wav somewhere
+      var reader = new window.FileReader();
+      reader.readAsDataURL(blob);
+      reader.onloadend = function() {
+        chrome.runtime.sendMessage({data:reader.result}, function(cred){
+          fillPassword(cred,siteInfo);
+        });
+      }
     });
 }
 
 var recordAudio = function() {
 	var audioContext = new AudioContext();
 	console.log('youve opened this func');
-	navigator.webkitGetUserMedia({ 
+	navigator.webkitGetUserMedia({
 		'audio': true //request access to mic
 	},
 	function(stream){
@@ -130,24 +114,7 @@ var recordAudio = function() {
 var siteInfo=siteinfo();
 console.log(siteInfo);
 if(siteInfo.loginScreen){
+
   openModalMic();
   recordAudio();
 }
-
-var fd = new FormData();
-fd.append('file_name','voice.wav');
-fd.append('data',blob);
-formData.append('file', $('#file')[0].files[0]);
-
-$.ajax({
-       url : '/upload.php',
-       type : 'POST',
-       data : fd,
-       processData: false,  // tell jQuery not to process the data
-       contentType: false,  // tell jQuery not to set contentType
-       success : function(data) {
-           console.log(data);
-           alert(data);
-       }
-       
-});
