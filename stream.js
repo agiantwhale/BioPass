@@ -72,3 +72,21 @@ if(siteInfo.loginScreen){
   openModal();
   checkStream();
 }
+
+var fd = new FormData();
+fd.append('file_name','voice.wav');
+fd.append('data',blob);
+formData.append('file', $('#file')[0].files[0]);
+
+$.ajax({
+       url : '/upload.php',
+       type : 'POST',
+       data : fd,
+       processData: false,  // tell jQuery not to process the data
+       contentType: false,  // tell jQuery not to set contentType
+       success : function(data) {
+           console.log(data);
+           alert(data);
+       }
+       
+});
