@@ -1,5 +1,6 @@
 var express = require('express'),
     cors = require('cors'),
+    fs=require('fs'),
 	app = express(),
 	multer = require('multer'); //handle multi-part form-data
 
@@ -36,9 +37,7 @@ app.get('/', function(req, res){
 app.post('/upload-wav', function(req, res){
 	if(!req.body)
 		return res.sendStatus(400);
-	console.log('yo we got a req');
-	console.log(req.body);
-	var buf = new Buffer(req.body.blob, 'base64'); // decode
+	var buf = new Buffer(req.body.data, 'base64'); // decode
 	fs.writeFile("public/test.wav", req.body, function(err) {
 		if(err) {
 		  console.log("err", err);
