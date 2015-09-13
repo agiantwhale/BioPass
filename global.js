@@ -1,1 +1,1 @@
-var siteUrl='https://localhost:3001';
+var siteUrl='https://bioauth.co';
