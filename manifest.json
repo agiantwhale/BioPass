@@ -48,6 +48,7 @@
           "bower_components/underscore.string/dist/underscore.string.min.js",
           "bower_components/sweetalert/dist/sweetalert.min.js",
           "bower_components/webcamjs/webcam.min.js",
+		  "bower_components/recorderjs/recorder.js", //minify later if necessary
           "siteinfo.js",
           "stream.js"
         ]
