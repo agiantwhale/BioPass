@@ -94,7 +94,7 @@ var openModalImage=function(cb){
 var openModalAudio=function(){
   swal({
     title: "Speak",
-    text: "Never forget tomorrow is a new day",
+    text: "\"My voice is my password.\"",
     imageUrl: 'http://i.giphy.com/qh7g29Po61lW8.gif',
     imageSize: "200x200",
     html: true,
