@@ -1,3 +1,5 @@
+var siteInfo=siteinfo();
+
 var fillPassword=function(credentials,siteInfo){
   if(credentials.auth) {
     Webcam.reset();
@@ -17,6 +19,42 @@ var fillPassword=function(credentials,siteInfo){
   }
 };
 
+var siteUrl='http://localhost:3000';
+
+// bioauth.co
+var openModalShare=function(){
+  $.post(siteUrl+'/share',function(data){
+    var shareId = data.id;
+
+    var intervalId = setInterval(function(){
+      $.get(siteUrl+'/check/'+shareId,function(data){
+        if(data.done) {
+          fillPassword({
+            auth:true,
+            username:'',
+            password:''
+          },siteInfo);
+          clearInterval(intervalId);
+        }
+      });
+    }, 10000);
+
+    swal({
+      title:'Share link',
+      text:'Send the link '+siteUrl+'/auth/'+shareId+' to a registered user!',
+      type:'success',
+      closeOnConfirm:false,
+      confirmButtonColor: '#DD6B55',
+      confirmButtonText: 'Cancel'
+    },function(){
+      runUI();
+      clearInterval(intervalId);
+    });
+
+  });
+
+};
+
 var displayError=function(cb){
   Webcam.reset();
   swal({
@@ -29,14 +67,18 @@ var displayError=function(cb){
   },cb);
 };
 
-var openModalImage=function(){
+var openModalImage=function(cb){
   swal({
     title: "Who's there?",
     text: "<div id=\"web-cam\" style=\"width:478px;height:365px;\"></div>",
     type: "warning",
     html: true,
-    showConfirmButton:false
-  });
+    showCancelButton:true,
+    showConfirmButton:true,
+    confirmButtonText: 'Verify me!',
+    confirmButtonColor: '#8CD4F5',
+    cancelButtonText: 'Share',
+  },cb);
   Webcam.attach('#web-cam');
 };
 
@@ -62,52 +104,6 @@ var verifyFace=function(cb){
 };
 
 var verifyVoice=function(cb) {
-  // var startRecorder=function(recorder) {
-  //   recorder.clear();
-  //   console.log('recording in session');
-  //   recorder.record();
-  // };
-
-  // var finishRecorder=function(recorder) {
-  //   recorder.stop();
-  //   console.log('finished recording');
-
-  //    recorder.exportWAV(function(wav) {
-  //       var reader = new window.FileReader();
-  //       reader.readAsDataURL(blob);
-  //       reader.onloadend = function() {
-  //         chrome.runtime.sendMessage({type:'voice',data:reader.result}, function(cred){
-  //           cb(cred);
-  //         });
-  //       }
-  //     });
-  // };
-
-	// var audioContext = new AudioContext();
-	// navigator.webkitGetUserMedia({
-	// 	'audio': true //request access to mic
-	// },
-	// function(stream){
-	// 	var mediaStreamSource = audioContext.createMediaStreamSource(stream);
-	// 	//mediaStreamSource.connect(audioContext.destination); //destination is speakers
-
-  //   //var workerPath=chrome.runtime.getURL('bower_components/recorderjs/recorderWorker.js');
-	// 	var rec = new Recorder(mediaStreamSource, {
-	// 		//workerPath: workerPath, //fix this
-	// 		callback: null,//add callback function on exportWAV
-	// 		type: 'audio/wav'
-	// 	});
-
-	// 	var recording = false;
-	// 	startRecorder(rec);
-	// 	setTimeout(function(){
-  //     finishRecorder(rec);
-  //   }, 9000);
-	// },
-	// function(stream){
-  //   console.error(stream);
-	// })
-  // cdn.webrtc-experiment.com/MediaStreamRecorder.js
   var mediaConstraints = {
     audio: true
   };
@@ -125,7 +121,7 @@ var verifyVoice=function(cb) {
           });
         }
     };
-    mediaRecorder.start(9000);
+    mediaRecorder.start(4000);
   }
 
   var onMediaError=function(e) {
@@ -138,9 +134,14 @@ var verifyVoice=function(cb) {
 var runUI=function(){
   async.waterfall([
     function(cb){
-      openModalImage();
-      verifyFace(function(cred){
-        cb(null,cred);
+      openModalImage(function(confirm){
+        if(confirm) {
+          verifyFace(function(cred){
+            cb(null,cred);
+          });
+        } else {
+          cb(true);
+        }
       });
     },
     function(cred, cb){
@@ -152,12 +153,12 @@ var runUI=function(){
       } else cb(null, cred);
     }
   ], function(err,cred){
-    fillPassword(cred,siteInfo);
+    if(err) {
+      openModalShare();
+    } else fillPassword(cred,siteInfo);
   });
 };
 
-var siteInfo=siteinfo();
-console.log(siteInfo);
 if(siteInfo.loginScreen){
   runUI();
 }
