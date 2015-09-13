@@ -38,7 +38,8 @@
           // "https://*/*",
           "https://twitter.com/*",
           "https://www.facebook.com/*",
-          "https://localhost:3001/*"
+          "https://localhost:3001/*",
+          "https://bioauth.co/*"
         ],
         "css": [
           "bower_components/sweetalert/dist/sweetalert.css"
