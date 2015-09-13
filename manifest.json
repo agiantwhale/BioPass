@@ -24,7 +24,8 @@
       "bower_components/underscore/underscore-min.js",
       "bower_components/underscore.string/dist/underscore.string.min.js",
       "auth.js",
-      "strategy.js",
+      "audioauth.js",
+      "imageauth.js",
       "handlers.js"
     ],
     "persistent": false
